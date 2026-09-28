@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { fetchMatchup } from './services/api';
-import { Star, Trophy, RotateCcw, Flame } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { fetchMatchup, searchArtists, fetchArtistAlbums } from './services/api';
+import { Star, Trophy, RotateCcw, Flame, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -13,6 +13,18 @@ export default function App() {
   const [artistB, setArtistB] = useState("Blur");
   const [albumB, setAlbumB] = useState("Parklife");
 
+  // Auto-suggest & Album States - Side A
+  const [suggestionsA, setSuggestionsA] = useState([]);
+  const [showSuggestionsA, setShowSuggestionsA] = useState(false);
+  const [albumsA, setAlbumsA] = useState([]);
+  const [loadingAlbumsA, setLoadingAlbumsA] = useState(false);
+
+  // Auto-suggest & Album States - Side B
+  const [suggestionsB, setSuggestionsB] = useState([]);
+  const [showSuggestionsB, setShowSuggestionsB] = useState(false);
+  const [albumsB, setAlbumsB] = useState([]);
+  const [loadingAlbumsB, setLoadingAlbumsB] = useState(false);
+
   // Game Logic states
   const [loading, setLoading] = useState(false);
   const [matchData, setMatchData] = useState(null);
@@ -20,6 +32,66 @@ export default function App() {
   const [scores, setScores] = useState({ albumA: 0, albumB: 0 });
   const [goldenTrackUsed, setGoldenTrackUsed] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
+
+  // Initial load: Fetch default albums for Oasis & Blur
+  useEffect(() => {
+    fetchArtistAlbums("Oasis").then(setAlbumsA);
+    fetchArtistAlbums("Blur").then(setAlbumsB);
+  }, []);
+
+  // Handler for Artist A Input Typing
+  const handleArtistAChange = async (e) => {
+    const val = e.target.value;
+    setArtistA(val);
+    if (val.trim().length >= 2) {
+      const results = await searchArtists(val);
+      setSuggestionsA(results);
+      setShowSuggestionsA(true);
+    } else {
+      setSuggestionsA([]);
+      setShowSuggestionsA(false);
+    }
+  };
+
+  // Handler for selecting Artist A from suggestions
+  const handleSelectArtistA = async (name) => {
+    setArtistA(name);
+    setShowSuggestionsA(false);
+    setLoadingAlbumsA(true);
+    const fetchedAlbums = await fetchArtistAlbums(name);
+    setAlbumsA(fetchedAlbums);
+    if (fetchedAlbums.length > 0) {
+      setAlbumA(fetchedAlbums[0].title || fetchedAlbums[0].name || fetchedAlbums[0]);
+    }
+    setLoadingAlbumsA(false);
+  };
+
+  // Handler for Artist B Input Typing
+  const handleArtistBChange = async (e) => {
+    const val = e.target.value;
+    setArtistB(val);
+    if (val.trim().length >= 2) {
+      const results = await searchArtists(val);
+      setSuggestionsB(results);
+      setShowSuggestionsB(true);
+    } else {
+      setSuggestionsB([]);
+      setShowSuggestionsB(false);
+    }
+  };
+
+  // Handler for selecting Artist B from suggestions
+  const handleSelectArtistB = async (name) => {
+    setArtistB(name);
+    setShowSuggestionsB(false);
+    setLoadingAlbumsB(true);
+    const fetchedAlbums = await fetchArtistAlbums(name);
+    setAlbumsB(fetchedAlbums);
+    if (fetchedAlbums.length > 0) {
+      setAlbumB(fetchedAlbums[0].title || fetchedAlbums[0].name || fetchedAlbums[0]);
+    }
+    setLoadingAlbumsB(false);
+  };
 
   // Theme styles
   const styles = {
@@ -144,28 +216,70 @@ export default function App() {
                       <span className="text-red-600 font-black text-xs">90 MIN</span>
                     </div>
 
-                    <div className="space-y-2">
-                      <div>
+                    <div className="space-y-3">
+                      {/* ARTIST A WITH AUTO-SUGGEST */}
+                      <div className="relative">
                         <label className="block text-[8px] font-sans font-bold text-slate-500 uppercase tracking-wider">Artist A</label>
                         <input
                           type="text"
                           value={artistA}
-                          onChange={(e) => setArtistA(e.target.value)}
-                          placeholder="Artist A"
+                          onChange={handleArtistAChange}
+                          onFocus={() => suggestionsA.length > 0 && setShowSuggestionsA(true)}
+                          placeholder="Type artist..."
                           required
-                          className="w-full bg-transparent border-b border-dashed border-slate-400 font-bold text-blue-900 focus:outline-none focus:border-red-500 text-sm"
+                          className="w-full bg-transparent border-b border-dashed border-slate-400 font-bold text-blue-900 focus:outline-none focus:border-red-500 text-sm py-0.5"
                         />
+
+                        {/* Suggestions Dropdown */}
+                        {showSuggestionsA && suggestionsA.length > 0 && (
+                          <ul className="absolute z-30 left-0 right-0 top-full mt-1 bg-slate-900 text-white border border-slate-700 rounded-md shadow-2xl max-h-40 overflow-y-auto text-xs">
+                            {suggestionsA.map((item, idx) => {
+                              const itemText = typeof item === 'string' ? item : item.name;
+                              return (
+                                <li
+                                  key={idx}
+                                  onClick={() => handleSelectArtistA(itemText)}
+                                  className="p-2 hover:bg-amber-500 hover:text-black cursor-pointer font-bold border-b border-slate-800/50 last:border-none"
+                                >
+                                  {itemText}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
                       </div>
+
+                      {/* ALBUM A DROPDOWN / MANUAL INPUT */}
                       <div>
-                        <label className="block text-[8px] font-sans font-bold text-slate-500 uppercase tracking-wider">Album A</label>
-                        <input
-                          type="text"
-                          value={albumA}
-                          onChange={(e) => setAlbumA(e.target.value)}
-                          placeholder="Album A"
-                          required
-                          className="w-full bg-transparent border-b border-dashed border-slate-400 font-bold text-blue-900 focus:outline-none focus:border-red-500 text-sm"
-                        />
+                        <div className="flex justify-between items-center">
+                          <label className="block text-[8px] font-sans font-bold text-slate-500 uppercase tracking-wider">Album A</label>
+                          {loadingAlbumsA && <Loader2 className="w-2.5 h-2.5 text-blue-900 animate-spin" />}
+                        </div>
+                        {albumsA.length > 0 ? (
+                          <select
+                            value={albumA}
+                            onChange={(e) => setAlbumA(e.target.value)}
+                            className="w-full bg-slate-100 border-b border-slate-400 font-bold text-blue-900 focus:outline-none text-sm py-1 rounded"
+                          >
+                            {albumsA.map((alb, idx) => {
+                              const albTitle = typeof alb === 'string' ? alb : (alb.title || alb.name);
+                              return (
+                                <option key={idx} value={albTitle}>
+                                  {albTitle}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={albumA}
+                            onChange={(e) => setAlbumA(e.target.value)}
+                            placeholder={loadingAlbumsA ? "Fetching albums..." : "Album A"}
+                            required
+                            className="w-full bg-transparent border-b border-dashed border-slate-400 font-bold text-blue-900 focus:outline-none focus:border-red-500 text-sm py-0.5"
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -250,28 +364,70 @@ export default function App() {
                       <span className="text-red-600 font-black text-xs">90 MIN</span>
                     </div>
 
-                    <div className="space-y-2">
-                      <div>
+                    <div className="space-y-3">
+                      {/* ARTIST B WITH AUTO-SUGGEST */}
+                      <div className="relative">
                         <label className="block text-[8px] font-sans font-bold text-slate-500 uppercase tracking-wider">Artist B</label>
                         <input
                           type="text"
                           value={artistB}
-                          onChange={(e) => setArtistB(e.target.value)}
-                          placeholder="Artist B"
+                          onChange={handleArtistBChange}
+                          onFocus={() => suggestionsB.length > 0 && setShowSuggestionsB(true)}
+                          placeholder="Type artist..."
                           required
-                          className="w-full bg-transparent border-b border-dashed border-slate-400 font-bold text-blue-900 focus:outline-none focus:border-red-500 text-sm"
+                          className="w-full bg-transparent border-b border-dashed border-slate-400 font-bold text-blue-900 focus:outline-none focus:border-red-500 text-sm py-0.5"
                         />
+
+                        {/* Suggestions Dropdown */}
+                        {showSuggestionsB && suggestionsB.length > 0 && (
+                          <ul className="absolute z-30 left-0 right-0 top-full mt-1 bg-slate-900 text-white border border-slate-700 rounded-md shadow-2xl max-h-40 overflow-y-auto text-xs">
+                            {suggestionsB.map((item, idx) => {
+                              const itemText = typeof item === 'string' ? item : item.name;
+                              return (
+                                <li
+                                  key={idx}
+                                  onClick={() => handleSelectArtistB(itemText)}
+                                  className="p-2 hover:bg-cyan-500 hover:text-black cursor-pointer font-bold border-b border-slate-800/50 last:border-none"
+                                >
+                                  {itemText}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
                       </div>
+
+                      {/* ALBUM B DROPDOWN / MANUAL INPUT */}
                       <div>
-                        <label className="block text-[8px] font-sans font-bold text-slate-500 uppercase tracking-wider">Album B</label>
-                        <input
-                          type="text"
-                          value={albumB}
-                          onChange={(e) => setAlbumB(e.target.value)}
-                          placeholder="Album B"
-                          required
-                          className="w-full bg-transparent border-b border-dashed border-slate-400 font-bold text-blue-900 focus:outline-none focus:border-red-500 text-sm"
-                        />
+                        <div className="flex justify-between items-center">
+                          <label className="block text-[8px] font-sans font-bold text-slate-500 uppercase tracking-wider">Album B</label>
+                          {loadingAlbumsB && <Loader2 className="w-2.5 h-2.5 text-blue-900 animate-spin" />}
+                        </div>
+                        {albumsB.length > 0 ? (
+                          <select
+                            value={albumB}
+                            onChange={(e) => setAlbumB(e.target.value)}
+                            className="w-full bg-slate-100 border-b border-slate-400 font-bold text-blue-900 focus:outline-none text-sm py-1 rounded"
+                          >
+                            {albumsB.map((alb, idx) => {
+                              const albTitle = typeof alb === 'string' ? alb : (alb.title || alb.name);
+                              return (
+                                <option key={idx} value={albTitle}>
+                                  {albTitle}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={albumB}
+                            onChange={(e) => setAlbumB(e.target.value)}
+                            placeholder={loadingAlbumsB ? "Fetching albums..." : "Album B"}
+                            required
+                            className="w-full bg-transparent border-b border-dashed border-slate-400 font-bold text-blue-900 focus:outline-none focus:border-red-500 text-sm py-0.5"
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
