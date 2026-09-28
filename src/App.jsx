@@ -135,9 +135,6 @@ export default function App() {
                     <span className={`text-xs font-black tracking-wider uppercase ${current.accentText}`}>
                       DECK 1 • SIDE A
                     </span>
-                    <span className="text-[9px] font-mono bg-black/20 px-2 py-0.5 rounded border border-current/20">
-                      HIGH BIAS / TYPE I
-                    </span>
                   </div>
 
                   {/* J-Card Form Inputs */}
@@ -186,9 +183,9 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Decorative Tape Transport Buttons (Non-interactive) */}
+                  {/* Decorative Tape Transport Buttons */}
                   <div className="grid grid-cols-6 gap-1 pt-1 pointer-events-none select-none opacity-80">
-                    <div className={`py-1 rounded text-center text-[9px] font-black border ${current.decorativeBtn}`}>● REC</div>
+                    <div className="py-1 rounded text-center text-[9px] font-black border bg-red-900/80 border-red-700 text-red-200 select-none cursor-default">● REC</div>
                     <div className={`py-1 rounded text-center text-[9px] font-black border ${current.decorativeBtn}`}>◀◀ REW</div>
                     <div className={`py-1 rounded text-center text-[9px] font-black border ${current.decorativeBtn}`}>▶ PLAY</div>
                     <div className={`py-1 rounded text-center text-[9px] font-black border ${current.decorativeBtn}`}>▶▶ FF</div>
@@ -219,7 +216,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Static Volume Control Knob (Non-interactive) */}
+                {/* Static Volume Control Knob */}
                 <div className="my-2 flex flex-col items-center pointer-events-none select-none opacity-90">
                   <div className="w-14 h-14 rounded-full border-2 border-neutral-600 bg-gradient-to-b from-neutral-800 to-neutral-900 shadow-md flex items-center justify-center relative">
                     <div className="w-1 h-4 bg-current rounded-full absolute top-1" />
@@ -243,9 +240,6 @@ export default function App() {
                   <div className="flex justify-between items-center mb-3">
                     <span className={`text-xs font-black tracking-wider uppercase ${current.accentText}`}>
                       DECK 2 • SIDE B
-                    </span>
-                    <span className="text-[9px] font-mono bg-black/20 px-2 py-0.5 rounded border border-current/20">
-                      CHROME / TYPE II
                     </span>
                   </div>
 
@@ -295,9 +289,9 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Decorative Tape Transport Buttons (Non-interactive) */}
+                  {/* Decorative Tape Transport Buttons */}
                   <div className="grid grid-cols-6 gap-1 pt-1 pointer-events-none select-none opacity-80">
-                    <div className={`py-1 rounded text-center text-[9px] font-black border ${current.decorativeBtn}`}>● REC</div>
+                    <div className="py-1 rounded text-center text-[9px] font-black border bg-red-900/80 border-red-700 text-red-200 select-none cursor-default">● REC</div>
                     <div className={`py-1 rounded text-center text-[9px] font-black border ${current.decorativeBtn}`}>◀◀ REW</div>
                     <div className={`py-1 rounded text-center text-[9px] font-black border ${current.decorativeBtn}`}>▶ PLAY</div>
                     <div className={`py-1 rounded text-center text-[9px] font-black border ${current.decorativeBtn}`}>▶▶ FF</div>
@@ -311,43 +305,91 @@ export default function App() {
           </main>
         </form>
       ) : isGameOver ? (
-        /* GAME OVER SCREEN */
-        <div className="bg-slate-800 p-8 rounded-xl shadow-2xl border border-slate-700 text-center max-w-lg w-full">
-          <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-4 animate-bounce" />
-          <h2 className="text-2xl font-bold mb-2">Battle Complete!</h2>
-          <div className="flex justify-around my-6 text-xl">
+        /* FINAL GAME OVER / WINNER SCREEN */
+        <div className="bg-zinc-900 p-8 rounded-2xl shadow-2xl border-2 border-zinc-800 text-center max-w-xl w-full">
+          <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-3 animate-bounce" />
+          
+          {scores.albumA === scores.albumB ? (
+            /* DRAW / TIE DISPLAY */
             <div>
-              <p className="font-bold text-amber-400">{matchData.album_a.title}</p>
-              <p className="text-3xl mt-2 font-black">{scores.albumA}</p>
+              <h2 className="text-3xl font-black text-amber-400 uppercase tracking-wider mb-2">IT'S A DRAW!</h2>
+              <p className="text-xs text-neutral-400 uppercase tracking-widest mb-6">Equal Score — Both Albums Reign</p>
+              
+              <div className="grid grid-cols-2 gap-4 my-6">
+                <div className="bg-zinc-950 p-4 rounded-xl border border-amber-500/30 flex flex-col items-center">
+                  <img src={matchData.album_a.cover_art} alt="" className="w-24 h-24 rounded-lg shadow-md mb-3" />
+                  <p className="font-black text-amber-400 text-sm">{matchData.album_a.title}</p>
+                  <p className="text-2xl font-black mt-1">{scores.albumA} PTS</p>
+                </div>
+                <div className="bg-zinc-950 p-4 rounded-xl border border-cyan-500/30 flex flex-col items-center">
+                  <img src={matchData.album_b.cover_art} alt="" className="w-24 h-24 rounded-lg shadow-md mb-3" />
+                  <p className="font-black text-cyan-400 text-sm">{matchData.album_b.title}</p>
+                  <p className="text-2xl font-black mt-1">{scores.albumB} PTS</p>
+                </div>
+              </div>
             </div>
-            <div className="self-center text-slate-500 font-bold">VS</div>
+          ) : (
+            /* WINNER DISPLAY (LARGE WINNING ALBUM) */
             <div>
-              <p className="font-bold text-blue-400">{matchData.album_b.title}</p>
-              <p className="text-3xl mt-2 font-black">{scores.albumB}</p>
+              <span className="text-xs text-neutral-400 uppercase font-mono tracking-widest">BATTLE VICTOR</span>
+              <h2 className="text-3xl font-black text-amber-400 uppercase tracking-wider mb-6">CHAMPION DECK</h2>
+
+              {/* Large Winner Hero Card */}
+              {(() => {
+                const isAWinner = scores.albumA > scores.albumB;
+                const winnerAlbum = isAWinner ? matchData.album_a : matchData.album_b;
+                const winnerScore = isAWinner ? scores.albumA : scores.albumB;
+                const loserAlbum = isAWinner ? matchData.album_b : matchData.album_a;
+                const loserScore = isAWinner ? scores.albumB : scores.albumA;
+
+                return (
+                  <div className="space-y-6">
+                    <div className="bg-gradient-to-b from-zinc-800 to-zinc-950 p-6 rounded-2xl border-2 border-amber-500/60 shadow-xl flex flex-col items-center">
+                      <img src={winnerAlbum.cover_art} alt="" className="w-36 h-36 rounded-xl shadow-2xl mb-4 border-2 border-amber-400/40" />
+                      <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">WINNING ALBUM</span>
+                      <h3 className="text-2xl font-black text-white mt-1">{winnerAlbum.title}</h3>
+                      <p className="text-4xl font-black text-amber-400 mt-2">{winnerScore} <span className="text-base text-neutral-400 font-normal">PTS</span></p>
+                    </div>
+
+                    {/* Runner Up Summary */}
+                    <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-800 flex items-center justify-between px-6">
+                      <div className="flex items-center gap-3">
+                        <img src={loserAlbum.cover_art} alt="" className="w-10 h-10 rounded" />
+                        <div className="text-left">
+                          <span className="text-[10px] text-neutral-500 uppercase font-bold">RUNNER UP</span>
+                          <p className="text-xs font-bold text-neutral-300">{loserAlbum.title}</p>
+                        </div>
+                      </div>
+                      <span className="text-lg font-black text-neutral-400">{loserScore} PTS</span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
-          </div>
+          )}
+
           <button
             type="button"
             onClick={() => setMatchData(null)}
-            className="flex items-center gap-2 mx-auto bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg font-bold"
+            className="flex items-center gap-2 mx-auto bg-amber-500 hover:bg-amber-400 text-black font-black px-6 py-3 rounded-xl shadow-lg transition-transform active:scale-95 mt-8 text-xs tracking-wider uppercase"
           >
-            <RotateCcw className="w-4 h-4" /> Play Another
+            <RotateCcw className="w-4 h-4" /> START NEW BATTLE
           </button>
         </div>
       ) : (
-        /* ACTIVE BATTLE MATCHUP SCREEN */
-        <div className="w-full max-w-2xl bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl">
+        /* ACTIVE BATTLE MATCHUP SCREEN (MATCHES DARK HI-FI THEME) */
+        <div className="w-full max-w-2xl bg-zinc-900 p-6 rounded-2xl border-2 border-zinc-800 shadow-2xl">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
-              <img src={matchData.album_a.cover_art} alt="" className="w-12 h-12 rounded shadow" />
-              <span className="font-bold text-amber-400">{scores.albumA}</span>
+              <img src={matchData.album_a.cover_art} alt="" className="w-12 h-12 rounded shadow border border-zinc-700" />
+              <span className="font-bold text-amber-400 text-xl">{scores.albumA}</span>
             </div>
-            <span className="text-xs bg-slate-700 px-3 py-1 rounded-full text-slate-300 font-semibold">
+            <span className="text-xs bg-zinc-950 border border-zinc-800 px-3 py-1 rounded-full text-neutral-400 font-mono font-bold tracking-wider">
               Round {currentRound + 1} of {matchData.total_rounds}
             </span>
             <div className="flex items-center gap-3">
-              <span className="font-bold text-blue-400">{scores.albumB}</span>
-              <img src={matchData.album_b.cover_art} alt="" className="w-12 h-12 rounded shadow" />
+              <span className="font-bold text-cyan-400 text-xl">{scores.albumB}</span>
+              <img src={matchData.album_b.cover_art} alt="" className="w-12 h-12 rounded shadow border border-zinc-700" />
             </div>
           </div>
 
@@ -355,9 +397,9 @@ export default function App() {
             <button
               type="button"
               onClick={() => handleVote('A')}
-              className="bg-slate-900 border-2 border-slate-700 hover:border-amber-400 p-6 rounded-xl transition-all group flex flex-col justify-between"
+              className="bg-zinc-950 border-2 border-zinc-800 hover:border-amber-500 p-6 rounded-xl transition-all group flex flex-col justify-between"
             >
-              <span className="text-xs text-amber-400 font-bold uppercase tracking-wider mb-2">{matchData.album_a.title}</span>
+              <span className="text-xs text-amber-500 font-bold uppercase tracking-wider mb-2">{matchData.album_a.title}</span>
               <p className="text-lg font-bold text-white group-hover:scale-105 transition-transform">
                 {matchData.matchups[currentRound].track_a || "N/A (No Track)"}
               </p>
@@ -366,20 +408,20 @@ export default function App() {
             <button
               type="button"
               onClick={() => handleVote('B')}
-              className="bg-slate-900 border-2 border-slate-700 hover:border-blue-400 p-6 rounded-xl transition-all group flex flex-col justify-between"
+              className="bg-zinc-950 border-2 border-zinc-800 hover:border-cyan-500 p-6 rounded-xl transition-all group flex flex-col justify-between"
             >
-              <span className="text-xs text-blue-400 font-bold uppercase tracking-wider mb-2">{matchData.album_b.title}</span>
+              <span className="text-xs text-cyan-400 font-bold uppercase tracking-wider mb-2">{matchData.album_b.title}</span>
               <p className="text-lg font-bold text-white group-hover:scale-105 transition-transform">
                 {matchData.matchups[currentRound].track_b || "N/A (No Track)"}
               </p>
             </button>
           </div>
 
-          <div className="flex justify-between items-center border-t border-slate-700 pt-4 mt-6">
+          <div className="flex justify-between items-center border-t border-zinc-800 pt-4 mt-6">
             <button
               type="button"
               onClick={() => handleVote('Tie')}
-              className="text-slate-400 hover:text-white text-sm font-semibold"
+              className="text-neutral-400 hover:text-white text-sm font-semibold"
             >
               Skip / Tie
             </button>
@@ -393,7 +435,7 @@ export default function App() {
                 if (choice?.toUpperCase() === 'B') handleVote('B', true);
               }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                goldenTrackUsed ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 'bg-amber-500 text-slate-950 hover:bg-amber-400 shadow-lg'
+                goldenTrackUsed ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-amber-500 text-black hover:bg-amber-400 shadow-lg'
               }`}
             >
               <Star className="w-3.5 h-3.5 fill-current" />
