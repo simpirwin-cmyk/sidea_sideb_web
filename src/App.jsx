@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchMatchup, searchArtists, fetchArtistAlbums } from './services/api';
 import { Star, Trophy, RotateCcw, Flame, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -93,7 +93,7 @@ export default function App() {
     setLoadingAlbumsB(false);
   };
 
-  // Theme styles
+  // Theme styles (Aiwa Matte Black & Vintage Silver Finishes)
   const styles = {
     black: {
       chassis: 'bg-zinc-950 border-zinc-800 text-zinc-100 shadow-2xl',
@@ -285,15 +285,26 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Cassette Door Window & Decorative Hardware Controls */}
+                {/* Cassette Door Window with Spinning Reels */}
                 <div className="space-y-3">
-                  <div className="h-12 bg-black/80 rounded border border-neutral-700 flex items-center justify-around px-4">
-                    <div className="w-7 h-7 rounded-full border-2 border-white/40 flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-white/60" />
+                  <div className="h-16 bg-black/80 rounded border border-neutral-700 flex items-center justify-around px-4 relative overflow-hidden">
+                    {/* Left Reel */}
+                    <div className={`w-8 h-8 rounded-full border-2 border-white/40 flex items-center justify-center ${loading ? 'animate-spin' : ''}`}>
+                      <div className="w-3 h-3 rounded-full bg-white/60 flex items-center justify-center">
+                        <div className="w-1 h-1 bg-black rounded-full" />
+                      </div>
                     </div>
-                    <div className="text-[9px] font-mono text-neutral-400 font-bold tracking-widest">CASSETTE DECK A</div>
-                    <div className="w-7 h-7 rounded-full border-2 border-white/40 flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-white/60" />
+                    
+                    <div className="text-center">
+                      <div className="text-[9px] font-mono text-neutral-400 font-bold tracking-widest">CASSETTE DECK A</div>
+                      <div className="text-[7px] font-mono text-neutral-500 uppercase">HIGH POSITION / TYPE II</div>
+                    </div>
+
+                    {/* Right Reel */}
+                    <div className={`w-8 h-8 rounded-full border-2 border-white/40 flex items-center justify-center ${loading ? 'animate-spin' : ''}`}>
+                      <div className="w-3 h-3 rounded-full bg-white/60 flex items-center justify-center">
+                        <div className="w-1 h-1 bg-black rounded-full" />
+                      </div>
                     </div>
                   </div>
 
@@ -325,14 +336,14 @@ export default function App() {
                   <div className="text-[7px] font-mono mb-1 text-neutral-400 uppercase">EQ STACK</div>
                   <div className="flex items-end justify-center gap-0.5 h-10 pt-1 border-t border-neutral-800">
                     {[40, 75, 35, 90, 65, 85, 45, 95].map((h, i) => (
-                      <div key={i} className="w-1.5 bg-current rounded-t opacity-90" style={{ height: `${h}%` }} />
+                      <div key={i} className="w-1.5 bg-current rounded-t opacity-90 transition-all duration-300" style={{ height: loading ? `${(h + 20) % 100}%` : `${h}%` }} />
                     ))}
                   </div>
                 </div>
 
-                {/* Static Volume Control Knob */}
-                <div className="my-2 flex flex-col items-center pointer-events-none select-none opacity-90">
-                  <div className="w-14 h-14 rounded-full border-2 border-neutral-600 bg-gradient-to-b from-neutral-800 to-neutral-900 shadow-md flex items-center justify-center relative">
+                {/* Tactile Hardware Knob */}
+                <div className="my-2 flex flex-col items-center select-none opacity-90 group cursor-pointer">
+                  <div className="w-14 h-14 rounded-full border-2 border-neutral-600 bg-gradient-to-b from-neutral-800 to-neutral-900 shadow-xl flex items-center justify-center relative transform group-hover:rotate-12 transition-transform duration-200">
                     <div className="w-1 h-4 bg-current rounded-full absolute top-1" />
                     <span className="text-[7px] font-black tracking-widest text-neutral-400 uppercase">VOL</span>
                   </div>
@@ -342,9 +353,15 @@ export default function App() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full py-2.5 rounded-lg text-[10px] font-black tracking-wider uppercase shadow-lg transition-transform active:scale-95 ${current.highlightBtn}`}
+                  className={`w-full py-2.5 rounded-lg text-[10px] font-black tracking-wider uppercase shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5 ${current.highlightBtn}`}
                 >
-                  {loading ? "DUBBING..." : "START BATTLE"}
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-3 h-3 animate-spin" /> DUBBING...
+                    </>
+                  ) : (
+                    "START BATTLE"
+                  )}
                 </button>
               </div>
 
@@ -433,15 +450,26 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Cassette Door Window & Decorative Hardware Controls */}
+                {/* Cassette Door Window with Spinning Reels */}
                 <div className="space-y-3">
-                  <div className="h-12 bg-black/80 rounded border border-neutral-700 flex items-center justify-around px-4">
-                    <div className="w-7 h-7 rounded-full border-2 border-white/40 flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-white/60" />
+                  <div className="h-16 bg-black/80 rounded border border-neutral-700 flex items-center justify-around px-4 relative overflow-hidden">
+                    {/* Left Reel */}
+                    <div className={`w-8 h-8 rounded-full border-2 border-white/40 flex items-center justify-center ${loading ? 'animate-spin' : ''}`}>
+                      <div className="w-3 h-3 rounded-full bg-white/60 flex items-center justify-center">
+                        <div className="w-1 h-1 bg-black rounded-full" />
+                      </div>
                     </div>
-                    <div className="text-[9px] font-mono text-neutral-400 font-bold tracking-widest">CASSETTE DECK B</div>
-                    <div className="w-7 h-7 rounded-full border-2 border-white/40 flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-white/60" />
+                    
+                    <div className="text-center">
+                      <div className="text-[9px] font-mono text-neutral-400 font-bold tracking-widest">CASSETTE DECK B</div>
+                      <div className="text-[7px] font-mono text-neutral-500 uppercase">HIGH POSITION / TYPE II</div>
+                    </div>
+
+                    {/* Right Reel */}
+                    <div className={`w-8 h-8 rounded-full border-2 border-white/40 flex items-center justify-center ${loading ? 'animate-spin' : ''}`}>
+                      <div className="w-3 h-3 rounded-full bg-white/60 flex items-center justify-center">
+                        <div className="w-1 h-1 bg-black rounded-full" />
+                      </div>
                     </div>
                   </div>
 
@@ -473,24 +501,23 @@ export default function App() {
               
               <div className="grid grid-cols-2 gap-4 my-6">
                 <div className="bg-zinc-950 p-4 rounded-xl border border-amber-500/30 flex flex-col items-center">
-                  <img src={matchData.album_a.cover_art} alt="" className="w-24 h-24 rounded-lg shadow-md mb-3" />
+                  <img src={matchData.album_a.cover_art} alt="" className="w-24 h-24 rounded-lg shadow-md mb-3 object-cover" />
                   <p className="font-black text-amber-400 text-sm">{matchData.album_a.title}</p>
                   <p className="text-2xl font-black mt-1">{scores.albumA} PTS</p>
                 </div>
                 <div className="bg-zinc-950 p-4 rounded-xl border border-cyan-500/30 flex flex-col items-center">
-                  <img src={matchData.album_b.cover_art} alt="" className="w-24 h-24 rounded-lg shadow-md mb-3" />
+                  <img src={matchData.album_b.cover_art} alt="" className="w-24 h-24 rounded-lg shadow-md mb-3 object-cover" />
                   <p className="font-black text-cyan-400 text-sm">{matchData.album_b.title}</p>
                   <p className="text-2xl font-black mt-1">{scores.albumB} PTS</p>
                 </div>
               </div>
             </div>
           ) : (
-            /* WINNER DISPLAY (LARGE WINNING ALBUM) */
+            /* WINNER DISPLAY */
             <div>
               <span className="text-xs text-neutral-400 uppercase font-mono tracking-widest">BATTLE VICTOR</span>
               <h2 className="text-3xl font-black text-amber-400 uppercase tracking-wider mb-6">CHAMPION DECK</h2>
 
-              {/* Large Winner Hero Card */}
               {(() => {
                 const isAWinner = scores.albumA > scores.albumB;
                 const winnerAlbum = isAWinner ? matchData.album_a : matchData.album_b;
@@ -501,7 +528,7 @@ export default function App() {
                 return (
                   <div className="space-y-6">
                     <div className="bg-gradient-to-b from-zinc-800 to-zinc-950 p-6 rounded-2xl border-2 border-amber-500/60 shadow-xl flex flex-col items-center">
-                      <img src={winnerAlbum.cover_art} alt="" className="w-36 h-36 rounded-xl shadow-2xl mb-4 border-2 border-amber-400/40" />
+                      <img src={winnerAlbum.cover_art} alt="" className="w-36 h-36 rounded-xl shadow-2xl mb-4 border-2 border-amber-400/40 object-cover" />
                       <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">WINNING ALBUM</span>
                       <h3 className="text-2xl font-black text-white mt-1">{winnerAlbum.title}</h3>
                       <p className="text-4xl font-black text-amber-400 mt-2">{winnerScore} <span className="text-base text-neutral-400 font-normal">PTS</span></p>
@@ -510,7 +537,7 @@ export default function App() {
                     {/* Runner Up Summary */}
                     <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-800 flex items-center justify-between px-6">
                       <div className="flex items-center gap-3">
-                        <img src={loserAlbum.cover_art} alt="" className="w-10 h-10 rounded" />
+                        <img src={loserAlbum.cover_art} alt="" className="w-10 h-10 rounded object-cover" />
                         <div className="text-left">
                           <span className="text-[10px] text-neutral-500 uppercase font-bold">RUNNER UP</span>
                           <p className="text-xs font-bold text-neutral-300">{loserAlbum.title}</p>
@@ -533,11 +560,11 @@ export default function App() {
           </button>
         </div>
       ) : (
-        /* ACTIVE BATTLE MATCHUP SCREEN (MATCHES DARK HI-FI THEME) */
+        /* ACTIVE BATTLE MATCHUP SCREEN */
         <div className="w-full max-w-2xl bg-zinc-900 p-6 rounded-2xl border-2 border-zinc-800 shadow-2xl">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
-              <img src={matchData.album_a.cover_art} alt="" className="w-12 h-12 rounded shadow border border-zinc-700" />
+              <img src={matchData.album_a.cover_art} alt="" className="w-12 h-12 rounded shadow border border-zinc-700 object-cover" />
               <span className="font-bold text-amber-400 text-xl">{scores.albumA}</span>
             </div>
             <span className="text-xs bg-zinc-950 border border-zinc-800 px-3 py-1 rounded-full text-neutral-400 font-mono font-bold tracking-wider">
@@ -545,7 +572,7 @@ export default function App() {
             </span>
             <div className="flex items-center gap-3">
               <span className="font-bold text-cyan-400 text-xl">{scores.albumB}</span>
-              <img src={matchData.album_b.cover_art} alt="" className="w-12 h-12 rounded shadow border border-zinc-700" />
+              <img src={matchData.album_b.cover_art} alt="" className="w-12 h-12 rounded shadow border border-zinc-700 object-cover" />
             </div>
           </div>
 
